@@ -943,7 +943,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if(blur > 0 && img != NULL) {
+    if (blur > 0 && img != NULL) {
         blur_surface(img, blur);
     }
 
