@@ -21,6 +21,7 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include "xcb.h"
 #include "cursors.h"
 #include "unlock_indicator.h"
 
@@ -84,6 +85,73 @@ xcb_visualtype_t *get_root_visual_type(xcb_screen_t *screen) {
     }
 
     return NULL;
+}
+
+xcb_pixmap_t create_bg_pixmap(xcb_connection_t *conn, xcb_screen_t *scr, u_int32_t *resolution, char *color);
+
+/* 
+ * Function create_fg_pixmap was taken from http://github.com/karulont/i3lock-blur 
+ * Written by Karl 'karulont' Tarbe
+ */
+xcb_pixmap_t create_fg_pixmap(xcb_connection_t *conn, xcb_screen_t *scr, u_int32_t *resolution) {
+    /* Generate a big enough pixmap */
+    xcb_pixmap_t final_pixmap = xcb_generate_id(conn);
+    xcb_create_pixmap(conn, scr->root_depth, final_pixmap, scr->root,
+                      resolution[0], resolution[1]);
+    xcb_gcontext_t gc = xcb_generate_id(conn);
+    const uint32_t gc_values[] = {1};
+    xcb_create_gc(conn, gc, screen->root, XCB_GC_SUBWINDOW_MODE, gc_values);
+
+    /* Iterate over all root window children */
+    xcb_query_tree_reply_t *reply = xcb_query_tree_reply(conn,
+                                                         xcb_query_tree(conn, scr->root), NULL);
+    xcb_window_t *children = xcb_query_tree_children(reply);
+    xcb_get_window_attributes_cookie_t *attribs =
+        (xcb_get_window_attributes_cookie_t *)malloc(sizeof(xcb_get_window_attributes_cookie_t) * reply->children_len);
+    xcb_get_geometry_cookie_t *geos = (xcb_get_geometry_cookie_t *)
+        malloc(sizeof(xcb_get_geometry_cookie_t) * reply->children_len);
+
+    if (!attribs || !geos) {
+        goto END;
+    }
+
+    for (int i = 0; i < reply->children_len; ++i) {
+        /* Get attributes to check if input-only window */
+        attribs[i] = xcb_get_window_attributes(conn, children[i]);
+        geos[i] = xcb_get_geometry(conn, children[i]);
+    }
+
+    /* Copy root window background to final_pixmap */
+    xcb_copy_area(conn, scr->root, final_pixmap, gc, 0, 0, 0, 0, resolution[0], resolution[1]);
+
+    for (int i = 0; i < reply->children_len; ++i) {
+        /* Get attributes to check if input-only window */
+        xcb_get_window_attributes_reply_t *attrib = xcb_get_window_attributes_reply(conn, attribs[i], NULL);
+
+        /* If attributes are NULL then the window was destroyed */
+        if (!attrib) {
+            continue;
+        }
+
+        if (attrib->_class == XCB_WINDOW_CLASS_INPUT_ONLY) {
+            free(attrib);
+            continue;
+        }
+        free(attrib);
+
+        /* Copy area to final_pixmap */
+        xcb_get_geometry_reply_t *geo = xcb_get_geometry_reply(conn, geos[i], NULL);
+        xcb_copy_area(conn, children[i], final_pixmap, gc, 0, 0, geo->x, geo->y, geo->width, geo->height);
+        free(geo);
+    }
+    free(geos);
+    free(attribs);
+END:
+    free(reply);
+
+    xcb_free_gc(conn, gc);
+
+    return final_pixmap;
 }
 
 xcb_pixmap_t create_bg_pixmap(xcb_connection_t *conn, xcb_screen_t *scr, u_int32_t *resolution, char *color) {
