@@ -7,22 +7,22 @@
 
 void _blur_bitmap(uint8_t bytes_per_pixel, uint8_t *source, uint8_t *result,
                   uint32_t width, uint32_t height, int ksize) {
-    uint32_t *temp;
+    uint32_t *acc;
     int px;
 
-    temp = malloc(sizeof(uint32_t) * bytes_per_pixel * width * height);
+    acc = malloc(sizeof(uint32_t) * bytes_per_pixel * width * height);
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             px = bytes_per_pixel * (x + width * y);
             for (int i = 0; i < bytes_per_pixel; ++i) {
-                temp[px + i] = source[px + i];
+                acc[px + i] = source[px + i];
                 if (x != 0)
-                    temp[px + i] += temp[px - bytes_per_pixel + i];
+                    acc[px + i] += acc[px - bytes_per_pixel + i];
                 if (y != 0)
-                    temp[px + i] += temp[px - bytes_per_pixel * width + i];
+                    acc[px + i] += acc[px - bytes_per_pixel * width + i];
                 if (x != 0 && y != 0)
-                    temp[px + i] -= temp[px - bytes_per_pixel * (width + 1) + i];
+                    acc[px + i] -= acc[px - bytes_per_pixel * (width + 1) + i];
             }
         }
     }
@@ -46,17 +46,17 @@ void _blur_bitmap(uint8_t bytes_per_pixel, uint8_t *source, uint8_t *result,
             px = bytes_per_pixel * (x + width * y);
 
             for (int i = 0; i < bytes_per_pixel; ++i) {
-                t = temp[bytes_per_pixel * (x_min + width * y_min) + i];
-                t += temp[bytes_per_pixel * (x_max + width * y_max) + i];
-                t -= temp[bytes_per_pixel * (x_max + width * y_min) + i];
-                t -= temp[bytes_per_pixel * (x_min + width * y_max) + i];
+                t = acc[bytes_per_pixel * (x_min + width * y_min) + i];
+                t += acc[bytes_per_pixel * (x_max + width * y_max) + i];
+                t -= acc[bytes_per_pixel * (x_max + width * y_min) + i];
+                t -= acc[bytes_per_pixel * (x_min + width * y_max) + i];
                 t *= filter;
                 result[px + i] = t;
             }
         }
     }
 
-    free(temp);
+    free(acc);
 }
 
 void blur_surface(cairo_surface_t *img, int kernel_size) {
