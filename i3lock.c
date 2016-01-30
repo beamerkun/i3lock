@@ -68,6 +68,7 @@ extern pam_state_t pam_state;
 int failed_attempts = 0;
 bool show_failed_attempts = false;
 int blur = 0;
+bool screenshot = false;
 
 static struct xkb_state *xkb_state;
 static struct xkb_context *xkb_context;
@@ -762,6 +763,7 @@ int main(int argc, char *argv[]) {
         {"ignore-empty-password", no_argument, NULL, 'e'},
         {"inactivity-timeout", required_argument, NULL, 'I'},
         {"show-failed-attempts", no_argument, NULL, 'f'},
+        {"screenshot", no_argument, NULL, 's'},
         {NULL, no_argument, NULL, 0}};
 
     if ((pw = getpwuid(getuid())) == NULL)
@@ -769,7 +771,7 @@ int main(int argc, char *argv[]) {
     if ((username = pw->pw_name) == NULL)
         errx(EXIT_FAILURE, "pw->pw_name is NULL.\n");
 
-    char *optstring = "hvnbdc:p:ui:teI:f";
+    char *optstring = "hvnbdc:p:ui:teI:fs";
     while ((o = getopt_long(argc, argv, optstring, longopts, &optind)) != -1) {
         switch (o) {
             case 'v':
@@ -807,6 +809,9 @@ int main(int argc, char *argv[]) {
                 break;
             case 'i':
                 image_path = strdup(optarg);
+                break;
+            case 's':
+                screenshot = true;
                 break;
             case 't':
                 tile = true;
@@ -931,8 +936,27 @@ int main(int argc, char *argv[]) {
 
     xcb_change_window_attributes(conn, screen->root, XCB_CW_EVENT_MASK,
                                  (uint32_t[]){XCB_EVENT_MASK_STRUCTURE_NOTIFY});
+    if (screenshot) {
+        xcb_pixmap_t screenshot = create_fg_pixmap(conn, screen, last_resolution);
 
-    if (image_path) {
+        img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
+                                         last_resolution[0],
+                                         last_resolution[1]);
+        cairo_surface_t *xcb_surface = 
+            cairo_xcb_surface_create(conn,
+                                     screenshot,
+                                     get_root_visual_type(screen),
+                                     last_resolution[0],
+                                     last_resolution[1]);
+        
+        cairo_t* img_ca = cairo_create(img);
+        cairo_set_source_surface(img_ca, xcb_surface, 0, 0);
+        cairo_paint(img_ca);
+        cairo_destroy(img_ca);
+
+        cairo_surface_destroy(xcb_surface);
+        xcb_free_pixmap(conn, screenshot);
+    } else if (image_path) {
         /* Create a pixmap to render on, fill it with the background color */
         img = cairo_image_surface_create_from_png(image_path);
         /* In case loading failed, we just pretend no -i was specified. */
