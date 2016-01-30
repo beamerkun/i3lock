@@ -38,6 +38,8 @@ i3lock_LDADD = \
 	$(CODE_COVERAGE_LDFLAGS)
 
 i3lock_SOURCES = \
+        blur.h \
+        blur.c \
 	cursors.h \
 	dpi.c \
 	dpi.h \

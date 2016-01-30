@@ -47,6 +47,7 @@
 #endif
 
 #include "i3lock.h"
+#include "blur.h"
 #include "xcb.h"
 #include "cursors.h"
 #include "unlock_indicator.h"
@@ -87,7 +88,7 @@ extern auth_state_t auth_state;
 int failed_attempts = 0;
 bool show_failed_attempts = false;
 bool retry_verification = false;
-bool blur = false;
+int blur = 0;
 
 static struct xkb_state *xkb_state;
 static struct xkb_context *xkb_context;
@@ -884,7 +885,7 @@ int main(int argc, char *argv[]) {
         {"version", no_argument, NULL, 'v'},
         {"nofork", no_argument, NULL, 'n'},
         {"beep", no_argument, NULL, 'b'},
-        {"blur", no_argument, NULL, 0},
+        {"blur", required_argument, NULL, 0},
         {"dpms", no_argument, NULL, 'd'},
         {"color", required_argument, NULL, 'c'},
         {"pointer", required_argument, NULL, 'p'},
@@ -958,8 +959,12 @@ int main(int argc, char *argv[]) {
             case 0:
                 if (strcmp(longopts[longoptind].name, "debug") == 0)
                     debug_mode = true;
-                if (strcmp(longopts[optind].name, "blur") == 0)
-                    blur = true;
+                if (strcmp(longopts[longoptind].name, "blur") == 0) {
+                    int kernel = 0;
+                    if (sscanf(optarg, "%d", &kernel) != 1 || time < 0)
+                        errx(EXIT_FAILURE, "invalid kernel size, it must be a positive integer\n");
+                    blur = kernel;
+                }
                 break;
             case 'f':
                 show_failed_attempts = true;
@@ -1085,8 +1090,8 @@ int main(int argc, char *argv[]) {
     }
     free(image_path);
 
-    if(blur && img != NULL) {
-        // blur handling goes here
+    if(blur > 0 && img != NULL) {
+        blur_surface(img, blur);
     }
 
     /* Pixmap on which the image is rendered to (if any) */
