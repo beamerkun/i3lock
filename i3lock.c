@@ -1090,7 +1090,7 @@ int main(int argc, char *argv[]) {
     }
     free(image_path);
 
-    if(blur > 0 && img != NULL) {
+    if (blur > 0 && img != NULL) {
         blur_surface(img, blur);
     }
 
