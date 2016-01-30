@@ -828,7 +828,7 @@ int main(int argc, char *argv[]) {
                     debug_mode = true;
                 if (strcmp(longopts[optind].name, "blur") == 0) {
                     int kernel = 0;
-                    if (sscanf(optarg, "%d", &kernel) != 1 || time < 0)
+                    if (sscanf(optarg, "%d", &kernel) != 1 || kernel < 0)
                         errx(EXIT_FAILURE, "invalid kernel size, it must be a positive integer\n");
                     blur = kernel;
                 }
