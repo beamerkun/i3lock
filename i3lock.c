@@ -1088,14 +1088,14 @@ int main(int argc, char *argv[]) {
         img = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                                          last_resolution[0],
                                          last_resolution[1]);
-        cairo_surface_t *xcb_surface = 
+        cairo_surface_t *xcb_surface =
             cairo_xcb_surface_create(conn,
                                      screenshot,
                                      get_root_visual_type(screen),
                                      last_resolution[0],
                                      last_resolution[1]);
-        
-        cairo_t* img_ca = cairo_create(img);
+
+        cairo_t *img_ca = cairo_create(img);
         cairo_set_source_surface(img_ca, xcb_surface, 0, 0);
         cairo_paint(img_ca);
 
