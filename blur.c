@@ -8,10 +8,9 @@
 void _blur_bitmap(uint8_t bytes_per_pixel, uint8_t *source, uint8_t *result,
                   uint32_t width, uint32_t height, int ksize) {
     uint32_t *acc;
-    int px;
-
     acc = malloc(sizeof(uint32_t) * bytes_per_pixel * width * height);
 
+    int px;
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             px = bytes_per_pixel * (x + width * y);
@@ -32,8 +31,8 @@ void _blur_bitmap(uint8_t bytes_per_pixel, uint8_t *source, uint8_t *result,
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
+            // Adjust box size to bitmap bounds
             int x_min, x_max, y_min, y_max;
-
             if ((x_min = x - ksize) < 0)
                 x_min = 0;
             if ((x_max = x + ksize) > width - 1)
