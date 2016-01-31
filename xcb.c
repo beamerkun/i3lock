@@ -83,8 +83,8 @@ xcb_visualtype_t *get_root_visual_type(xcb_screen_t *screen) {
 
 xcb_pixmap_t create_bg_pixmap(xcb_connection_t *conn, xcb_screen_t *scr, u_int32_t *resolution, char *color);
 
-/* 
- * Function create_fg_pixmap was taken from http://github.com/karulont/i3lock-blur 
+/*
+ * Function create_fg_pixmap was taken from http://github.com/karulont/i3lock-blur
  * Written by Karl 'karulont' Tarbe
  */
 xcb_pixmap_t create_fg_pixmap(xcb_connection_t *conn, xcb_screen_t *scr, u_int32_t *resolution) {
