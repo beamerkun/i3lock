@@ -939,7 +939,7 @@ int main(int argc, char *argv[]) {
     if (screenshot) {
         xcb_pixmap_t screenshot = create_fg_pixmap(conn, screen, last_resolution);
 
-        img = cairo_image_surface_create(CAIRO_FORMAT_ARGB32,
+        img = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                                          last_resolution[0],
                                          last_resolution[1]);
         cairo_surface_t *xcb_surface = 
@@ -952,8 +952,8 @@ int main(int argc, char *argv[]) {
         cairo_t* img_ca = cairo_create(img);
         cairo_set_source_surface(img_ca, xcb_surface, 0, 0);
         cairo_paint(img_ca);
-        cairo_destroy(img_ca);
 
+        cairo_destroy(img_ca);
         cairo_surface_destroy(xcb_surface);
         xcb_free_pixmap(conn, screenshot);
     } else if (image_path) {
