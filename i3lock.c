@@ -783,7 +783,7 @@ int main(int argc, char *argv[]) {
     while ((o = getopt_long(argc, argv, optstring, longopts, &optind)) != -1) {
         switch (o) {
             case 'v':
-                errx(EXIT_SUCCESS, "version " VERSION " © 2010 Michael Stapelberg");
+                errx(EXIT_SUCCESS, "version " VERSION " © 2010 Michael Stapelberg, 2016 Jakub Sokół");
             case 'n':
                 dont_fork = true;
                 break;
@@ -851,7 +851,7 @@ int main(int argc, char *argv[]) {
                 break;
             default:
                 errx(EXIT_FAILURE, "Syntax: i3lock [-v] [-n] [-b] [-d] [-c color] [-u] [-p win|default]"
-                                   " [-i image.png] [-t] [-e] [-I timeout] [-f]");
+                                   " [-i image.png] [-s] [--blur kernel-size] [-t] [-e] [-I timeout] [-f]");
         }
     }
 

@@ -20,6 +20,9 @@ i3lock \- improved screen locker
 .RB [\|\-b\|]
 .RB [\|\-i
 .IR image.png \|]
+.RB [\|\-b
+.IR kernel-size \|]
+.RB [\|\-\-screenshot]
 .RB [\|\-c
 .IR color \|]
 .RB [\|\-t\|]
@@ -81,6 +84,15 @@ verified or whether it is wrong).
 .TP
 .BI \-i\  path \fR,\ \fB\-\-image= path
 Display the given PNG image instead of a blank screen.
+
+.TP
+.BI \-s\  \f\B\-\-screenshot
+Make a screenshot on start and use it instead of a blank screen. Best used with blur.
+
+.TP
+.BI \-\-blur= kernel_size
+Blur specified image/screenshot with specified kernel size (pixels in every direction
+used for averaging pixel value).
 
 .TP
 .BI \-c\  rrggbb \fR,\ \fB\-\-color= rrggbb
@@ -148,3 +160,4 @@ use a wrapper script around i3lock like the following:
 Michael Stapelberg <michael+i3lock at stapelberg dot de>
 
 Jan-Erik Rediger <badboy at archlinux.us>
+Jakub Sokół <beamerkun at gmail.com>
