@@ -1,5 +1,16 @@
-i3lock - improved screen locker
+i3lock-blur - improved improved screen locker
 ===============================
+This fork of i3lock adds:
+
+- making screenshots by using -s switch ( thanks to
+  https://github.com/karulont/i3lock-blur )
+
+- blurring screenshot/image using --blur switch. Contrary to fork above
+  this is performed on CPU, thus avoiding problems with drivers etc.
+
+Original README.md
+------------
+
 i3lock is a simple screen locker like slock. After starting it, you will
 see a white screen (you can configure the color/an image). You can return
 to your screen by entering your password.
@@ -64,4 +75,4 @@ make
 
 Upstream
 --------
-Please submit pull requests to https://github.com/i3/i3lock
+Please submit pull requests to https://github.com/i3/i3lock-blur
