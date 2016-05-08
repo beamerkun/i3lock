@@ -109,6 +109,7 @@ AM_PROG_AR
 
 AX_FLAGS_WARN_ALL
 AX_CHECK_COMPILE_FLAG([-Wunused-value], [AX_APPEND_FLAG([-Wunused-value], [AM_CFLAGS])])
+AX_CHECK_COMPILE_FLAG([-O3], [AX_APPEND_FLAG([-O3], [AM_CFLAGS])])
 AC_SUBST(AM_CFLAGS)
 
 # Checks for header files.
