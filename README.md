@@ -73,6 +73,12 @@ mkdir -p build && cd build/
 make
 ```
 
+Building on Ubuntu 18.04
+------------
+All required packages:
+
+`sudo apt-get install pkg-config libxcb1 libpam-dev libcairo-dev libxcb-composite0 libxcb-composite0-dev libxcb-xinerama0-dev libev-dev libx11-dev libx11-xcb-dev libxkbcommon0 libxkbcommon-x11-0 libxcb-xkb-dev libxcb-randr0-dev libxcb-image0-dev libxcb-util-dev libxcb-xrm-dev libxkbcommon-dev libxkbcommmon-x11-dev`
+
 Upstream
 --------
 Please submit pull requests to https://github.com/i3/i3lock-blur
